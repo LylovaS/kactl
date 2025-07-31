@@ -218,12 +218,13 @@ def print_header(data, outstream):
 
     ind = lines.index(until) + 1
     header_length = len("".join(lines[:ind]))
+    while header_length > 110:
+        ind -= 1
+        header_length = len("".join(lines[:ind]))
     def adjust(name):
         return name if name.startswith('.') else name.split('.')[0]
     output = r"\enspace{}".join(map(adjust, lines[:ind]))
     font_size = 10
-    if header_length > 150:
-        font_size = 8
     output = r"\hspace{3mm}\textbf{" + output + "}"
     output = "\\fontsize{%d}{%d}" % (font_size, font_size) + output
     print(output, file=outstream)

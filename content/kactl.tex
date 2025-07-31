@@ -14,9 +14,14 @@
 	% \maketitle{``One Last Time'' Edition}{\today}
 	\begin{multicols*}{3}
 	\thispagestyle{fancy}
+	
 	% Table of contents, without subsections:
-	\setcounter{tocdepth}{0}
-	\tableofcontents
+	\renewcommand{\contentsname}{}
+	\setcounter{tocdepth}{0}\
+	\vspace{0.5cm}
+  	\tableofcontents
+	\thispagestyle{fancy}
+
 
 	\kactlchapter{contest}
 	\kactlchapter{math}
