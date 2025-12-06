@@ -15,19 +15,19 @@ struct Node {
 	static constexpr T unit = INT_MIN;
 	T f(T a, T b) { return max(a, b); } // (any associative fn)
 	Node *l = 0, *r = 0; T val = unit; int lo, hi;
-	Node(int sz): Node(0, sz-1) {}
+	Node(int sz): Node(0, sz) {}
 	Node(int lo, int hi): lo(lo), hi(hi) {}
 };
 
 Node* update(Node* v, int pos, T val) {
 	v = new Node(*v);
-	if (v->lo == v->hi) {
+	if (v->hi - v->lo == 1) {
 		v->val = val; return v;
 	}
 	int m = (v->lo + v->hi)/2;
 	if (!v->l) v->l = new Node(v->lo, m);
-	if (!v->r) v->r = new Node(m + 1, v->hi);
-	if (pos <= m) {
+	if (!v->r) v->r = new Node(m, v->hi);
+	if (pos < m) {
 		v->l = update(v->l, pos, val);
 	} else {
 		v->r = update(v->r, pos, val);
@@ -36,10 +36,10 @@ Node* update(Node* v, int pos, T val) {
 	return v;
 }
 T query(Node* v, int l, int r) {
-	if (v->lo > r || v->hi < l) return v->unit;
+	if (r <= v->lo || v->hi <= l) return v->unit;
 	if (l <= v->lo && v->hi <= r) return v->val;
 	int m = (v->lo + v->hi)/2;
 	if (!v->l) v->l = new Node(v->lo, m);
-	if (!v->r) v->r = new Node(m + 1, v->hi);
+	if (!v->r) v->r = new Node(m, v->hi);
 	return v->f(query(v->l, l, r), query(v->r, l, r));
 }
