@@ -14,9 +14,9 @@
 const int inf = 1e9;
 struct SegTree {
 	using T = int; using PT = int;
-	int n; vector<T> mas; vector<PT> def;
 	const T unit = -inf;
 	const PT punit = (-inf-1); //neutral for pushed op
+	int n; vector<T> mas; vector<PT> def;
 
 	T upd(T val, PT push) {
 		if (push!=punit) return push; return val;
@@ -27,9 +27,9 @@ struct SegTree {
 	}
 
 	void build(const vector<T>& vals, int v, int l, int r) {
-		if (l==r) { mas[v] = vals[l]; def[v] = punit; return; }
+		if (r-l==1) { mas[v] = vals[l]; def[v] = punit; return; }
 		int m = (l+r)/2;
-		build(vals, 2*v, l, m); build(vals, 2*v+1, m+1, r);
+		build(vals, 2*v, l, m); build(vals, 2*v+1, m, r);
 		mas[v] = f(upd(mas[2*v], def[2*v]),
 			upd(mas[2*v+1], def[2*v+1]));
 		def[v] = punit;
@@ -39,33 +39,36 @@ struct SegTree {
 		def[2*v+1] = stkUpd(def[2*v+1], def[v]); def[v] = punit;
 	}
 	void update(int rqL, int rqR, PT val, int v, int l, int r) {
-		if (l > rqR || r < rqL) return;
+		if (rqR <= l || r <= rqL) return;
 		if (rqL <= l && r <= rqR) {
 			def[v] = stkUpd(def[v], val); return;
 		}
 		push(v); int m = (l+r)/2;
 		update(rqL, rqR, val, 2*v, l, m);
-		update(rqL, rqR, val, 2*v+1, m+1, r);
+		update(rqL, rqR, val, 2*v+1, m, r);
 		mas[v] = f(upd(mas[2*v], def[2*v]),
 			upd(mas[2*v+1], def[2*v+1]));
 	}
 	T query(int rqL, int rqR, int v, int l, int r) {
-		if (l > rqR || r < rqL) return unit;
+		if (rqR <= l || r <= rqL) return unit;
 		if (rqL <= l && r <= rqR) return upd(mas[v], def[v]);
 		push(v); int m = (l+r)/2;
 		auto ans = f(query(rqL, rqR, 2*v, l, m),
-			query(rqL, rqR, 2*v+1, m+1, r));
+			query(rqL, rqR, 2*v+1, m, r));
 		mas[v] = f(upd(mas[2*v], def[2*v]),
 			upd(mas[2*v+1], def[2*v+1]));
 		return ans;
 	}
 
-	SegTree(int n): SegTree(vector<T>(n, unit)) {}
-	SegTree(const vector<T>& vals) : n(sz(vals)), mas(4*n, unit), def(4*n, punit) {
-		build(vals, 1, 0, sz(vals)-1);
+	SegTree(int n_): SegTree(vector<T>(n_, unit)) {}
+	SegTree(const vector<T>& vals) : n(sz(vals)), 
+			mas(4*n, unit), def(4*n, punit) {
+		build(vals, 1, 0, n);
 	}
-	void update(int l, int r, PT val) {
-		update(l, r, val, 1, 0, n-1);
+	void update(int l, int r, PT val) { // update on [l, r)
+		update(l, r, val, 1, 0, n);
 	}
-	T query(int l, int r) { return query(l, r, 1, 0, n-1); }
+	T query(int l, int r) { // query on [l, r)
+		return query(l, r, 1, 0, n); 
+	}
 };
