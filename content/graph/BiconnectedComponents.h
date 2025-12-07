@@ -7,7 +7,8 @@
  *  runs a callback for the edges in each. In a biconnected component there
  *  are at least two distinct paths between any two nodes. Note that a node can
  *  be in several components. An edge which is not in a component is a bridge,
- *  i.e., not part of any cycle.
+ *  i.e., not part of any cycle. Also finds all cut vertices
+ *  - vertices whose removal increases the number of connected components in the graph.
  * Usage:
  *  int eid = 0; ed.resize(N);
  *  for each edge (a,b) {
@@ -24,26 +25,27 @@ vector<vector<pii>> ed;
 int Time;
 template<class F>
 int dfs(int at, int par, F& f) {
-	int me = num[at] = ++Time, top = me;
+	int me = num[at] = ++Time, top = me, ch = 0;
 	for (auto [y, e] : ed[at]) if (e != par) {
 		if (num[y]) {
 			top = min(top, num[y]);
 			if (num[y] < me)
 				st.push_back(e);
 		} else {
-			int si = sz(st);
+			int si = sz(st); ++ch;
 			int up = dfs(y, e, f);
 			top = min(top, up);
 			if (up == me) {
 				st.push_back(e);
 				f(vi(st.begin() + si, st.end()));
 				st.resize(si);
-			}
-			else if (up < me) st.push_back(e);
+			} else if (up < me) st.push_back(e);
 			else { /* e is a bridge */ }
+			if ((up >= me && par != -1) || (par == -1 && ch == 2)) {
+				// at is cut vertex
+			}
 		}
-	}
-	return top;
+	} return top;
 }
 
 template<class F>
