@@ -10,44 +10,34 @@
 
 double merge(double a, double b, char c) {
 	switch (c) {
-		case '*': return a * b;
-		case '/': return a / b;
-		case '+': return a + b;
-		case '-': return a - b;
+		case '*': return a * b; case '/': return a / b;
+		case '+': return a + b;	case '-': return a - b;
 	} assert(false);
 }
 map<char, int> prior = {{'*', 1},{'/', 1},{'+', 0},{'-', 0}};
 double eval(string s) {
 	string ops;
 	vector<double> vals;
-	bool past_number;
+	bool past_number=false;
 	for (char c: s) {
+		if (c >= '0' && c <= '9') {
+			if (!past_number) vals.push_back(0);
+			vals.back() = vals.back() * 10 + c - '0';
+			past_number = true;	continue;
+		}
+		past_number = false;
 		if (c == '(') {
-			past_number = false;
-			ops.push_back(c);
-			continue;
+			ops.push_back(c); continue;
 		}
 		if (c == ')') {
-			past_number = false;
 			while (ops.back() != '(') {
 				double b = vals.back(); vals.pop_back();
 				double a = vals.back(); vals.pop_back();
 				vals.push_back(merge(a, b, ops.back()));
 				ops.pop_back();
 			}
-			ops.pop_back();
-			continue;
+			ops.pop_back();	continue;
 		}
-		if (c >= '0' && c <= '9') {
-			if (!past_number) {
-				vals.push_back(c - '0');
-			} else {
-				vals.back() = vals.back() * 10 + c - '0';
-			}
-			past_number = true;
-			continue;
-		}
-		past_number = false;
 		while (!ops.empty() && ops.back() != '(' && prior[c] <= prior[ops.back()]) {
 			double b = vals.back(); vals.pop_back();
 			double a = vals.back(); vals.pop_back();
