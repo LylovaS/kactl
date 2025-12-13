@@ -2,6 +2,10 @@
 
 #include "../../content/data-structures/Treap.h"
 
+template<class F> void each(Node* n, F f) {
+	if (n) { each(n->l, f); f(n->val); each(n->r, f); }
+}
+
 pair<Node*, Node*> split2(Node* n, int v) {
 	if (!n) return {};
 	if (n->val >= v) {
