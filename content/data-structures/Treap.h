@@ -11,33 +11,35 @@
 #pragma once
 
 struct Node {
-	Node *l = 0, *r = 0; int val, y, c = 1;
-	Node(int val) : val(val), y(rand()) {}
+	Node *l=0, *r=0, *par=0; int val, y, c = 1;
+	Node(int _val) : val(_val), y(rand()) {}
 	void recalc();
 };
 
 int cnt(Node* n) { return n ? n->c : 0; }
 void Node::recalc() { c = cnt(l) + cnt(r) + 1; }
 pair<Node*, Node*> split(Node* n, int k) {
-	if (!n) return {};
+	if (!n) return {}; n->par = 0;
 	if (cnt(n->l) >= k) { // "n->val >= k" for lower_bound(k)
 		auto [L,R] = split(n->l, k);
-		n->l = R; n->recalc();
-		return {L, n};
+		n->l = R; if (R) R->par=n;
+		n->recalc(); return {L, n};
 	} else {
 		auto [L,R] = split(n->r,k - cnt(n->l) - 1); // and just "k"
-		n->r = L; n->recalc();
-		return {n, R};
+		n->r = L; if (L) L->par = n;
+		n->recalc(); return {n, R};
 	}
 }
 Node* merge(Node* l, Node* r) {
 	if (!l) return r;
 	if (!r) return l;
 	if (l->y > r->y) {
-		l->r = merge(l->r, r);
+		auto x = merge(l->r, r);
+		l->r = x; if (x) x->par = l;
 		return l->recalc(), l;
 	} else {
-		r->l = merge(l, r->l);
+		Node *x = merge(l, r->l);
+		r->l = x; if (x) x->par = r;
 		return r->recalc(), r;
 	}
 }

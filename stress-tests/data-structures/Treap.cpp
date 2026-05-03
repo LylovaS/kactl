@@ -6,6 +6,14 @@ template<class F> void each(Node* n, F f) {
 	if (n) { each(n->l, f); f(n->val); each(n->r, f); }
 }
 
+void check_par_ptr(Node *n, Node *p = 0) {
+	if (n) {
+		assert(n->par == p);
+		check_par_ptr(n->l, n);
+		check_par_ptr(n->r, n);
+	}
+}
+
 pair<Node*, Node*> split2(Node* n, int v) {
 	if (!n) return {};
 	if (n->val >= v) {
@@ -40,6 +48,7 @@ int main() {
 		Node* n = 0;
 		rep(i,0,10)
 			n = merge(n, &nodes[i]);
+		check_par_ptr(n);
 
 		int v = rand() % 25;
 		int left = cnt(split2(n, v).first);
@@ -74,6 +83,7 @@ int main() {
 			// cerr << x << ' ';
 			assert(x == exp[ind++]);
 		});
+		check_par_ptr(n);
 		// cerr << endl;
 	}
 	cout<<"Tests passed!"<<endl;
