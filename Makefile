@@ -8,6 +8,7 @@ help:
 	@echo ""
 	@echo "Available commands are:"
 	@echo "	make fast		- to build KACTL, quickly (only runs LaTeX once)"
+	@echo "	make fast_reference_to_print - to build KACTL with inconsolanta font, quickly (only runs LaTeX once)"
 	@echo "	make kactl		- to build KACTL"
 	@echo "	make clean		- to clean up the build process"
 	@echo "	make veryclean		- to clean up and remove kactl.pdf"
@@ -21,6 +22,10 @@ help:
 fast: | build
 	$(LATEXCMD) -jobname=$(FILENAME) content/kactl.tex </dev/null 
 	cp build/$(FILENAME).pdf $(FILENAME).pdf
+
+fast_reference_to_print: | build
+	$(LATEXCMD) -jobname=$(FILENAME) "\def\useinconsolata{}\input{content/kactl.tex}" </dev/null 
+	cp build/$(FILENAME).pdf $(FILENAME)_to_print.pdf
 
 kactl: test-session.pdf | build
 	$(LATEXCMD) -jobname=$(FILENAME) content/kactl.tex && $(LATEXCMD) -jobname=$(FILENAME) content/kactl.tex

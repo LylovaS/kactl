@@ -31,6 +31,8 @@ The algorithms that are not included in the pdf are left commented out in `chapt
 To build KACTL, type `make kactl` (or `make fast`) on a \*nix machine -- this will update `kactl.pdf`.
 (Windows might work as well, but is not tested.) `doc/README` has a few more notes about this.
 
+Type `make help` to see all variants of build.
+
 Tips:
 1. Check out what's excluded by default by running `make showexcluded`.
 The default configuration is chosen to be a reasonable balance for beginners
